@@ -1,10 +1,7 @@
 package com.re_coded.example.android.booklisting;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by Lenovo on 10/23/2017.
@@ -33,9 +30,14 @@ public class Helper {
                     authors = volumeInfo.getJSONArray("authors");
                     author = authors.getString(0);
                 }
+                if (volumeInfo.getString("publishedDate").isEmpty()) {
+                    publishDate = "Unknown";
+                } else {
+                    publishDate = volumeInfo.getString("publishedDate");
 
-                publishDate = volumeInfo.getString("publishedDate");
-                books[i] = new Book(name,publishDate,author);
+                }
+
+                books[i] = new Book(name, publishDate, author);
             }
         } catch (Exception e) {
             e.printStackTrace();

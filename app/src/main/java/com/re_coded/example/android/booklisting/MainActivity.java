@@ -5,6 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,8 +23,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Book>> {
 
     ActivityMainBinding b;
 
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         b = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        getSupportLoaderManager().initLoader(1,null,this);
         b.searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,6 +63,21 @@ public class MainActivity extends AppCompatActivity {
         b.booksList.setAdapter(new BookArrayAdapter(this, R.layout.books_list_item, books));
     }
 
+    @Override
+    public Loader<List<Book>> onCreateLoader(int id, Bundle args) {
+        return new MyAsyncTaskLoader(this,"");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Book>> loader, List<Book> data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Book>> loader) {
+
+    }
+
 
     class BooksAsync extends AsyncTask<String, String, String> {
 
@@ -81,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     String line = bufferedReader.readLine();
                     while (line != null) {
                         JSONData.append(line);
-                        bufferedReader.readLine();
+                        line = bufferedReader.readLine();
                     }
                 } else {
                     Log.e("Log_Msg", httpURLConnection.getResponseCode() + "");
