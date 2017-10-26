@@ -43,7 +43,7 @@ public class BookArrayAdapter extends ArrayAdapter {
         Book book = (Book) getItem(position);
             viewHolder.title.setText(book.getTitle());
             viewHolder.publish.setText(book.getDate());
-            viewHolder.author.setText(book.getAutor());
+            viewHolder.author.setText(book.getAuthor());
 
         return convertView;
     }

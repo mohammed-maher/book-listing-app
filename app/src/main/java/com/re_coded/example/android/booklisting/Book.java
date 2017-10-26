@@ -5,37 +5,37 @@ package com.re_coded.example.android.booklisting;
  */
 
 public class Book {
-    private String Title;
-    private String Date;
-    private String Autor;
+    private String title;
+    private String date;
+    private String author;
 
-    public Book(String title, String date, String autor) {
-        Title = title;
-        Date = date;
-        Autor = autor;
+    public Book(String title, String date, String author) {
+        this.title = title;
+        this.date = date;
+        this.author = author;
     }
 
     public String getTitle() {
-        return Title;
+        return title;
     }
 
     public void setTitle(String title) {
-        Title = title;
+        this.title = title;
     }
 
     public String getDate() {
-        return Date;
+        return date;
     }
 
     public void setDate(String date) {
-        Date = date;
+        this.date = date;
     }
 
-    public String getAutor() {
-        return Autor;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setAutor(String autor) {
-        Autor = autor;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 }
