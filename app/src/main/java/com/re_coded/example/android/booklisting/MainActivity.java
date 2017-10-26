@@ -5,11 +5,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.re_coded.example.android.booklisting.databinding.ActivityMainBinding;
@@ -25,7 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Book>> {
+public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding b;
 
@@ -33,11 +32,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         b = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        getSupportLoaderManager().initLoader(1,null,this);
         b.searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isNetworkAvailable()) {
+                    b.searchButton.setEnabled(false);
+                    b.loadProgress.setVisibility(View.VISIBLE);
+                    b.noResultText.setVisibility(View.GONE);
+                    b.booksList.setVisibility(View.VISIBLE);
                     BooksAsync task = new BooksAsync();
                     task.execute(b.searchEditText.getText().toString().replaceAll(" ", "+"));
                 } else {
@@ -58,26 +60,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    public void updateUI(Book[] books) {
-        Log.e("UPDATE UI","YES");
+    public void emptySearchResults(){
+        b.booksList.setVisibility(View.GONE);
+        b.noResultText.setVisibility(View.VISIBLE);
+    }
+
+    public void updateUI(List<Book> books) {
+        Log.e("UPDATE UI", "YES");
         b.booksList.setAdapter(new BookArrayAdapter(this, R.layout.books_list_item, books));
     }
-
-    @Override
-    public Loader<List<Book>> onCreateLoader(int id, Bundle args) {
-        return new MyAsyncTaskLoader(this,"");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Book>> loader, List<Book> data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Book>> loader) {
-
-    }
-
 
     class BooksAsync extends AsyncTask<String, String, String> {
 
@@ -105,10 +96,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 } else {
                     Log.e("Log_Msg", httpURLConnection.getResponseCode() + "");
                 }
-                Log.e("CONNECTION","FINISHED");
-
             } catch (Exception e) {
-                Log.e("PRKNT", e.getMessage());
+                e.printStackTrace();
             } finally {
                 if (httpURLConnection != null) {
                     httpURLConnection.disconnect();
@@ -132,21 +121,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         @Override
         protected void onPostExecute(String s) {
-            Log.e("POST EXCUTE","YES");
-
             try {
                 JSONObject jsonObject = new JSONObject(s);
                 int count = jsonObject.getInt("totalItems");
                 if (count > 0) {
-                    Book[] books = Helper.parseJson(s);
+                    List<Book> books = Helper.parseJson(s);
                     updateUI(books);
+                }else{
+                    emptySearchResults();
                 }
+                b.searchButton.setEnabled(true);
+                b.loadProgress.setVisibility(View.GONE);
+
             } catch (JSONException e) {
-
-                Log.e("PRKNT", e.getMessage());
-
+                Log.e("PRINT", e.getMessage());
             }
         }
     }
-
 }
